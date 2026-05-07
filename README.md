@@ -1,4 +1,4 @@
-# ⚡ Stack IoT para Monitoramento de Energia (PZEM-004T + ESP8266)
+## ⚡ Stack IoT para Monitoramento de Energia (PZEM-004T + ESP8266)
 
 Este repositório contém a infraestrutura e os códigos necessários para implantar um sistema completo de monitoramento de energia em tempo real. O projeto utiliza um microcontrolador ESP8266 com o sensor PZEM-004T, enviando dados via MQTT para uma stack local baseada em Docker composta por **Mosquitto, Telegraf, InfluxDB e Grafana (Stack TIG)**.
 
