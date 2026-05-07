@@ -1,0 +1,53 @@
+# Arquivo: docker-compose.yml
+# Define a stack de serviços de IoT (MQTT, InfluxDB, Grafana, Telegraf)
+#
+# Para executar:
+# 1. Instale o Docker Compose: sudo apt install docker-compose-plugin
+# 2. Pare e remova os contêineres manuais (docker stop ...; docker rm ...)
+# 3. Execute: docker compose up -d
+
+version: '3.8'
+
+services:
+  # --- 1. O "Correio" (MQTT Broker) ---
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: mosquitto
+    ports:
+      - "1883:1883"
+    volumes:
+      - ~/mosquitto/config:/mosquitto/config
+      - ~/mosquitto/data:/mosquitto/data
+      - ~/mosquitto/log:/mosquitto/log
+    restart: unless-stopped
+
+  # --- 2. O "Banco de Dados" (Time-Series) ---
+  influxdb:
+    image: influxdb:2.7
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - ~/influxdb_data:/var/lib/influxdb2
+    restart: unless-stopped
+
+  # --- 3. O "Painel" (Visualização) ---
+  grafana:
+    image: grafana/grafana-oss
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ~/grafana_data:/var/lib/grafana
+    user: "472" # Define o usuário (como fizemos com 'chown')
+    restart: unless-stopped
+
+  # --- 4. A "Cola" (Coletor/ETL) ---
+  telegraf:
+    image: telegraf
+    container_name: telegraf
+    volumes:
+      - ~/telegraf_config/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    # Usa a rede do 'host' para se conectar facilmente ao 127.0.0.1
+    network_mode: host 
+    restart: unless-stopped
